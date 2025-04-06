@@ -1,0 +1,110 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Switch Admin EFE - Orderyuk</title>
+    <script src="https://cdn.tailwindcss.com"></script>
+</head>
+<body class="bg-gray-100 p-10">
+    <div class="max-w-md mx-auto bg-white p-6 rounded-lg shadow-lg">
+        <h1 class="text-2xl font-bold mb-6 text-center">Switch Admin EFE - Orderyuk</h1>
+        <form id="automationForm" method="POST" action="/run" class="space-y-4">
+            <!-- Admin fields -->
+            <div>
+                <label for="admin1" class="block text-gray-700 font-medium">Admin 1</label>
+                <input type="number" name="values[]" id="admin1" value="0" 
+                    class="w-full mt-1 p-2 border rounded focus:outline-none focus:ring focus:border-blue-300">
+            </div>
+            <div>
+                <label for="admin2" class="block text-gray-700 font-medium">Admin 2</label>
+                <input type="number" name="values[]" id="admin2" value="0" 
+                    class="w-full mt-1 p-2 border rounded focus:outline-none focus:ring focus:border-blue-300">
+            </div>
+            <div>
+                <label for="admin3" class="block text-gray-700 font-medium">Admin 3</label>
+                <input type="number" name="values[]" id="admin3" value="0" 
+                    class="w-full mt-1 p-2 border rounded focus:outline-none focus:ring focus:border-blue-300">
+            </div>
+            <div>
+                <label for="admin4" class="block text-gray-700 font-medium">Admin 4</label>
+                <input type="number" name="values[]" id="admin4" value="0" 
+                    class="w-full mt-1 p-2 border rounded focus:outline-none focus:ring focus:border-blue-300">
+            </div>
+            <div>
+                <label for="admin6" class="block text-gray-700 font-medium">Admin 6</label>
+                <input type="number" name="values[]" id="admin6" value="0" 
+                    class="w-full mt-1 p-2 border rounded focus:outline-none focus:ring focus:border-blue-300">
+            </div>
+            <div>
+                <label for="admin7" class="block text-gray-700 font-medium">Admin 7</label>
+                <input type="number" name="values[]" id="admin7" value="0" 
+                    class="w-full mt-1 p-2 border rounded focus:outline-none focus:ring focus:border-blue-300">
+            </div>
+            <!-- Submit button -->
+            <button id="automationButton" type="submit" 
+                class="w-full bg-blue-500 text-white py-2 px-4 rounded hover:bg-blue-600">
+                Submit
+            </button>
+        </form>
+    </div>
+
+    <div id="log-container" class="max-w-md mx-auto p-6">
+        <h2 class="text-lg font-semibold">Logs</h2>
+        <div id="logContainer" class="space-y-2"></div>
+    </div>
+
+    <script>
+        const logContainer = document.getElementById('logContainer');
+        const startButton = document.getElementById('automationButton');
+        const automationForm = document.getElementById('automationForm');
+
+        function addLog(message, isError = false) {
+            const logEntry = document.createElement('div');
+            logEntry.className = isError ? 'text-red-600' : 'text-green-600';
+            logEntry.textContent = message;
+            logContainer.appendChild(logEntry);
+            logContainer.scrollTop = logContainer.scrollHeight;
+        }
+
+        automationForm.addEventListener('submit', async (e) => {
+            e.preventDefault(); // Prevent page reload
+            changeButtonText();
+
+            const formData = new FormData(automationForm);
+            addLog('Starting automation...');
+
+            try {
+                // Send the form data asynchronously using fetch
+                const response = await fetch('/run', {
+                    method: 'POST',
+                    headers: {
+                        'Content-Type': 'application/x-www-form-urlencoded',
+                    },
+                    body: new URLSearchParams(formData)
+                });
+
+                const result = await response.text();
+                if (response.ok) {
+                    addLog('Automation completed successfully!', false); // Success message
+                } else {
+                    addLog(`Error: ${result}`, true); // Error message
+                }
+            } catch (error) {
+                addLog(`Error: ${error.message}`, true); // Error message
+            } finally {
+                startButton.disabled = false; // Re-enable the submit button after completion
+                startButton.textContent = "Submit"; // Reset button text
+                startButton.classList.remove("opacity-50", "cursor-not-allowed"); // Reset button styling
+            }
+        });
+
+        function changeButtonText() {
+            const button = document.getElementById("automationButton");
+            button.textContent = "Processing...";
+            button.disabled = true; // Disable button to prevent multiple submissions
+            button.classList.add("opacity-50", "cursor-not-allowed"); // Styling for disabled state
+        }
+    </script>
+</body>
+</html>

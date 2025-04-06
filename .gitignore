@@ -1,0 +1,10 @@
+node_modules
+.env
+.well-known
+cgi-bin
+public
+tmp
+*.log
+.htaccess
+*.png
+package-lock.json
